@@ -22,7 +22,7 @@ const Login = () => {
                     />
                 </div> 
 
-                <button class="bg-red-400 hover:bg-red-700 text-xl text-white font-bold py-2 px-4 rounded">
+                <button className="bg-red-400 hover:bg-red-700 text-xl text-white font-bold py-2 px-4 rounded">
                     Login
                 </button>
             </form>
