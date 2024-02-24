@@ -1,24 +1,58 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+    const emailRef = useRef('');
+    const passwordRef = useRef('');
+
+    const handleRegister = async event => {
+        event.preventDefault();
+        const email = emailRef.current.value;
+        const password = passwordRef.current.value;
+        console.log(email, password)
+
+        const user = { email, password };
+
+        const url = "http://localhost:5000/login";
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        });
+        
+        if (response.ok) {
+            console.log("done")
+        } else {
+            console.log("error")
+          }
+        
+        event.target.reset()
+    }
+
     return (
         <div className='w-2/4 bg-red-500 mx-auto my-10 py-5 rounded'>
             <h1 className='text-white text-center mt-2 text-4xl font-bold'>Please Login</h1>
 
-            <form>
+            <form onSubmit={handleRegister}>
                 <div className="mb-4">
                     <input
+                        ref={emailRef}
                         type="email"
                         id="email"
                         className={"shadow appearance-none border rounded w-11/12 mx-4 my-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
                         placeholder="Enter your email"
+                        required
                     />
 
                     <input
+                        ref={passwordRef}
                         type="password"
                         id="password"
                         className={"shadow appearance-none border rounded w-11/12 mx-4 my-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
                         placeholder="Enter your password"
+                        required
                     />
                 </div> 
 

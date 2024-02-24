@@ -11,7 +11,6 @@ const Login = () => {
         const name = nameRef.current.value;
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
-        console.log(name, email, password)
 
         const user = { name, email, password };
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -26,10 +27,37 @@ async function run() {
 
       //Register user
       app.post("/register", async (req, res) => {
-      const user = req.body;
-      const result = await userCollection.insertOne(user);
-      res.send(result);
-  });
+        const { email, password } = req.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = { email, hashedPassword };
+        const result = await userCollection.insertOne(newUser);
+        res.send(result);
+    });
+
+    // Login user
+    app.post('/login', async (req, res) => {
+      const { email, password } = req.body;
+
+      // Find the user by email
+      const user = await userCollection.findOne({ email });
+
+      if (!user) {
+        console.log("hi")
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
+
+      // Compare the provided password with the hashed password in the database
+      const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
+
+      if (!isPasswordValid) {
+        console.log("hihi")
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
+      console.log("done")
+      return res.status(201).json({ message: 'ok'})
+    });
 
 
     } finally {
