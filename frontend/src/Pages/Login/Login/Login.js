@@ -56,9 +56,14 @@ const Login = () => {
                     />
                 </div> 
 
-                <button className="bg-red-400 hover:bg-red-700 text-xl text-white font-bold py-2 px-4 rounded">
-                    Login
-                </button>
+                <div className="flex flex-row justify-between mx-8">
+                    <button className="bg-red-400 hover:bg-red-700 text-xl text-white font-bold py-2 px-4 rounded">
+                        Login
+                    </button>
+                    <Link to="/forgotpass" className='text-white py-auto text-xl font-bold my-3'>
+                        Forgot Password
+                    </Link>
+                </div>
             </form>
 
             <p className='text-xl font-bold my-3'>New to the website? <Link to="/register" className='text-white py-auto'>Please Register</Link> </p>
