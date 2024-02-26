@@ -36,13 +36,29 @@ async function run() {
       await client.connect();
       const userCollection = client.db("CSE471").collection("user");
 
+      //Get user ID
+      app.get("/userId/:email", async (req, res) => {
+        const userEmail = req.params.email;
+        const query = { email : userEmail };
+        const user = await userCollection.findOne(query);
+        res.send(user._id);
+      });
+
+      //Get if admin
+      app.get("/admin/:userId", async (req, res) => {
+        const userid = req.params.userId;
+        const filter = { _id: new ObjectId(userid) };
+        const user = await userCollection.findOne(filter);
+        res.send({role : user.role});
+      });
+
       //Register user
       app.post("/register", async (req, res) => {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = { email, hashedPassword };
+        const newUser = { email, hashedPassword, role };
         const result = await userCollection.insertOne(newUser);
         res.send(result);
       });

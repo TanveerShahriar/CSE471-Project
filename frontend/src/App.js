@@ -6,6 +6,9 @@ import Login from './Pages/Login/Login/Login';
 import Register from './Pages/Login/Register/Register';
 import ForgotPass from './Pages/Login/ForgotPass/ForgotPass';
 import ResetPass from './Pages/Login/ResetPass/ResetPass';
+import RequireAuth from './Pages/Login/RequireAuth/RequireAuth';
+import Admin from './Pages/Admin/Admin';
+import RequireAdmin from './Pages/Login/RequireAdmin/RequireAdmin';
 
 function App() {
   return (
@@ -14,11 +17,23 @@ function App() {
 
       <Routes> 
         <Route path='/' element={
-          <Home></Home>
+          <RequireAuth>
+            <Home></Home>
+          </RequireAuth>
         }></Route>
 
         <Route path='/home' element={
-          <Home></Home>
+          <RequireAuth>
+            <Home></Home>
+          </RequireAuth>
+        }></Route>
+
+        <Route path='/admin' element={
+          <RequireAuth>
+            <RequireAdmin>
+              <Admin></Admin>
+            </RequireAdmin>
+          </RequireAuth>
         }></Route>
 
         <Route path='/login' element={

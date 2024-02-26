@@ -1,17 +1,21 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import Cookies from 'js-cookie';
 
 const Login = () => {
     const emailRef = useRef('');
     const passwordRef = useRef('');
 
-    const handleRegister = async event => {
+    const handleLogin = async event => {
         event.preventDefault();
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
-        console.log(email, password)
 
         const user = { email, password };
+
+        fetch(`http://localhost:5000/userId/${email}`)
+            .then(res => res.json())
+            .then(data => Cookies.set('userId', data, { expires: 7 }));
 
         const url = "http://localhost:5000/login";
         const response = await fetch(url, {
@@ -35,7 +39,7 @@ const Login = () => {
         <div className='w-2/4 bg-red-500 mx-auto my-10 py-5 rounded'>
             <h1 className='text-white text-center mt-2 text-4xl font-bold'>Please Login</h1>
 
-            <form onSubmit={handleRegister}>
+            <form onSubmit={handleLogin}>
                 <div className="mb-4">
                     <input
                         ref={emailRef}

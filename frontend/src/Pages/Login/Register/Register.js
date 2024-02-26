@@ -11,8 +11,9 @@ const Login = () => {
         const name = nameRef.current.value;
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
+        const role = 'general'
 
-        const user = { name, email, password };
+        const user = { name, email, password, role };
 
         const url = "http://localhost:5000/register";
         fetch(url, {

@@ -8,6 +8,12 @@ const Header = () => {
                     <CustomLink to="/home">
                         Bus Ticketing System
                     </CustomLink>
+                    <CustomLink to="/admin">
+                        Admin
+                    </CustomLink>
+                    <CustomLink to="/login">
+                        Login
+                    </CustomLink>
                 </div>
             </nav>
         </div>

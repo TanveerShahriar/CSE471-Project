@@ -45,7 +45,7 @@ const Home = () => {
                 </div> 
 
                 <button className="bg-red-400 hover:bg-red-700 text-xl text-white font-bold py-2 px-4 rounded">
-                    Send Mail
+                    Reset
                 </button>
             </form>
         </div>
