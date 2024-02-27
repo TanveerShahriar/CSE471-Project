@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
 
 const Login = () => {
     const emailRef = useRef('');
     const passwordRef = useRef('');
+    const navigate = useNavigate();
 
     const handleLogin = async event => {
         event.preventDefault();
@@ -27,6 +28,7 @@ const Login = () => {
         });
         
         if (response.ok) {
+            navigate('/');
             console.log("done")
         } else {
             console.log("error")
