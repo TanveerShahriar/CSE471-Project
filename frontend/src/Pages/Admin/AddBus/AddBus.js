@@ -11,7 +11,8 @@ const AddBus = () => {
         const name = nameRef.current.value;
         const type = typeRef.current.value;
         const seat = seatRef.current.value;
-        console.log(name, type, seat);
+
+        const bus = { name, type, seat };
 
         const url = "http://localhost:5000/addbus";
         fetch(url, {
