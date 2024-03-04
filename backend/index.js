@@ -35,6 +35,7 @@ async function run() {
     try {
       await client.connect();
       const userCollection = client.db("CSE471").collection("user");
+      const busCollection = client.db("CSE471").collection("bus");
 
       //Get user ID
       app.get("/userId/:email", async (req, res) => {
@@ -54,11 +55,11 @@ async function run() {
 
       //Register user
       app.post("/register", async (req, res) => {
-        const { email, password, role } = req.body;
+        const { name, email, password, role } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = { email, hashedPassword, role };
+        const newUser = { name, email, hashedPassword, role };
         const result = await userCollection.insertOne(newUser);
         res.send(result);
       });
@@ -133,6 +134,13 @@ async function run() {
       };
 
       const result = await userCollection.updateOne(filter, updatedData, options);
+      res.send(result);
+    });
+
+    //Add Bus
+    app.post("/addbus", async (req, res) => {
+      const bus= req.body;
+      const result = await busCollection.insertOne(bus);
       res.send(result);
     });
 

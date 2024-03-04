@@ -1,7 +1,9 @@
+import { Link } from "react-router-dom";
+
 const Admin = () => {
     return (
         <div className="text-left">
-            This is admin
+            <Link to='/addbus'>Add Driver </Link>
         </div>
     );
 };

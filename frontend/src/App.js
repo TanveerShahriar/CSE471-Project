@@ -7,7 +7,8 @@ import Register from './Pages/Login/Register/Register';
 import ForgotPass from './Pages/Login/ForgotPass/ForgotPass';
 import ResetPass from './Pages/Login/ResetPass/ResetPass';
 import RequireAuth from './Pages/Login/RequireAuth/RequireAuth';
-import Admin from './Pages/Admin/Admin';
+import Admin from './Pages/Admin/Admin/Admin';
+import AddBus from './Pages/Admin/AddBus/AddBus';
 import RequireAdmin from './Pages/Login/RequireAdmin/RequireAdmin';
 
 function App() {
@@ -32,6 +33,14 @@ function App() {
           <RequireAuth>
             <RequireAdmin>
               <Admin></Admin>
+            </RequireAdmin>
+          </RequireAuth>
+        }></Route>
+
+        <Route path='/addbus' element={
+          <RequireAuth>
+            <RequireAdmin>
+              <AddBus></AddBus>
             </RequireAdmin>
           </RequireAuth>
         }></Route>
