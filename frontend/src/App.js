@@ -10,6 +10,7 @@ import RequireAuth from './Pages/Login/RequireAuth/RequireAuth';
 import Admin from './Pages/Admin/Admin/Admin';
 import AddBus from './Pages/Admin/AddBus/AddBus';
 import RequireAdmin from './Pages/Login/RequireAdmin/RequireAdmin';
+import AddRoute from './Pages/Admin/AddRoute/AddRoute';
 
 function App() {
   return (
@@ -41,6 +42,14 @@ function App() {
           <RequireAuth>
             <RequireAdmin>
               <AddBus></AddBus>
+            </RequireAdmin>
+          </RequireAuth>
+        }></Route>
+
+        <Route path='/addroute' element={
+          <RequireAuth>
+            <RequireAdmin>
+              <AddRoute></AddRoute>
             </RequireAdmin>
           </RequireAuth>
         }></Route>

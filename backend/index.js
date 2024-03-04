@@ -36,6 +36,8 @@ async function run() {
       await client.connect();
       const userCollection = client.db("CSE471").collection("user");
       const busCollection = client.db("CSE471").collection("bus");
+      const districtCollection = client.db("CSE471").collection("district");
+      const routeCollection = client.db("CSE471").collection("route");
 
       //Get user ID
       app.get("/userId/:email", async (req, res) => {
@@ -141,6 +143,19 @@ async function run() {
     app.post("/addbus", async (req, res) => {
       const bus= req.body;
       const result = await busCollection.insertOne(bus);
+      res.send(result);
+    });
+
+    //Get all districts
+    app.get("/districts", async (req, res) => {
+      const districts = await districtCollection.find({}).toArray();
+      res.send(districts);
+    });
+
+    //Add Route
+    app.post("/addroute", async (req, res) => {
+      const route= req.body;
+      const result = await routeCollection.insertOne({route});
       res.send(result);
     });
 
