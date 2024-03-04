@@ -21,7 +21,7 @@ const Header = () => {
                         Admin
                     </CustomLink>
                     {
-                        location.pathname !== "/login" ?
+                        location.pathname !== "/login" && location.pathname !== "/register" && location.pathname !== "/forgotpass" ?
                         <button onClick={handleLogOut} className='font-bold text-2xl p-1 text-white'>LOGOUT</button>
                         :
                         <CustomLink to="/login">LOGIN</CustomLink>

@@ -148,7 +148,7 @@ async function run() {
 
     //Get all districts
     app.get("/districts", async (req, res) => {
-      const districts = await districtCollection.find({}).toArray();
+      const districts = await districtCollection.find({}).sort({name : 1}).toArray();
       res.send(districts);
     });
 

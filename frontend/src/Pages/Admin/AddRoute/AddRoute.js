@@ -53,7 +53,7 @@ const AddRoute = () => {
                     ref={districtRef}
                 >
                     {
-                        districts.map(district => <option>{district.name}</option>)
+                        districts.map(district => <option key={district._id}>{district.name}</option>)
                     }
                 </select>
             </div> 
