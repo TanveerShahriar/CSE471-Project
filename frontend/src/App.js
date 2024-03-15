@@ -12,6 +12,7 @@ import AddBus from './Pages/Admin/AddBus/AddBus';
 import RequireAdmin from './Pages/Login/RequireAdmin/RequireAdmin';
 import AddRoute from './Pages/Admin/AddRoute/AddRoute';
 import AddSchedule from './Pages/Admin/AddSchedule/AddSchedule';
+import Verify from './Pages/Login/Verify/Verify';
 
 function App() {
   return (
@@ -77,6 +78,10 @@ function App() {
 
         <Route path='/resetpass/:userId' element={
           <ResetPass></ResetPass>
+        }></Route>
+
+        <Route path='/verify/:userId' element={
+          <Verify></Verify>
         }></Route>
         
       </Routes>

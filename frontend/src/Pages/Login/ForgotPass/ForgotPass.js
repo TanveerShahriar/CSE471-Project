@@ -18,12 +18,6 @@ const ForgotPass = () => {
             body: JSON.stringify(user)
         });
         
-        // if (response.ok) {
-        //     console.log("done")
-        // } else {
-        //     console.log("error")
-        //   }
-        
         event.target.reset()
     }
 

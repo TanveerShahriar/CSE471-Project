@@ -19,12 +19,6 @@ const Home = () => {
             body: JSON.stringify({ password })
         });
         
-        // if (response.ok) {
-        //     console.log("done")
-        // } else {
-        //     console.log("error")
-        //   }
-        
         event.target.reset()
     }
 

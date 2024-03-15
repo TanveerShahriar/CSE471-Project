@@ -25,11 +25,7 @@ const Login = () => {
             body: JSON.stringify(user)
         })
             .then(res => res.json())
-            .then(data => {
-            });
-        
-        event.target.reset()
-        navigate('/login');
+            .then(data => { navigate(`/verify/${data.insertedId}`)});
     }
 
     return (

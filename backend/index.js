@@ -31,6 +31,24 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// send mail verification
+function mailSender(reciever, mailSubject, body){
+  const mailOptions = {
+    from: process.env.NodeMailer_USER,
+    to: reciever,
+    subject: mailSubject,
+    text: body
+  };
+  
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
+
 async function run() {
     try {
       await client.connect();
@@ -62,9 +80,30 @@ async function run() {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = { name, email, hashedPassword, role };
+        const newUser = { name, email, hashedPassword, role, verfiy : false };
         const result = await userCollection.insertOne(newUser);
+        
+        // Sending Mail
+        const mailSubject = 'Email Verification';
+        const body = `http://localhost:3000/mailverify/${result.insertedId}`;
+        mailSender(email, mailSubject, body);
+
         res.send(result);
+      });
+
+      //Resend verification mail
+      app.post('/resend', async (req, res) => {
+        const { userId } = req.body;
+
+        const filter = { _id: new ObjectId(userId) };
+        const user = await userCollection.findOne(filter);
+
+        // Sending Mail
+        const mailSubject = 'Email Verification';
+        const body = `http://localhost:3000/mailverify/${userId}`;
+        mailSender(user.email, mailSubject, body);
+        
+        return res.status(201).json({ message: 'ok'})
       });
 
       // Login user
@@ -101,22 +140,11 @@ async function run() {
           console.log("hi")
           return res.status(401).json({ message: 'Invalid email or password' });
         }
-      
+
         // Sending Mail
-        const mailOptions = {
-          from: process.env.NodeMailer_USER,
-          to: email,
-          subject: 'Hello from Nodemailer',
-          text: `http://localhost:3000/resetpass/${user._id}`
-        };
-   
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log('Email sent: ' + info.response);
-          }
-        });
+        const mailSubject = 'Password Reset';
+        const body = `http://localhost:3000/resetpass/${user._id}`;
+        mailSender(email, mailSubject, body);
 
         return res.status(201).json({ message: 'ok'})
       });
