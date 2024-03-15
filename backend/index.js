@@ -38,6 +38,7 @@ async function run() {
       const busCollection = client.db("CSE471").collection("bus");
       const districtCollection = client.db("CSE471").collection("district");
       const routeCollection = client.db("CSE471").collection("route");
+      const scheduleCollection = client.db("CSE471").collection("schedule");
 
       //Get user ID
       app.get("/userId/:email", async (req, res) => {
@@ -66,98 +67,123 @@ async function run() {
         res.send(result);
       });
 
-    // Login user
-    app.post('/login', async (req, res) => {
-      const { email, password } = req.body;
+      // Login user
+      app.post('/login', async (req, res) => {
+        const { email, password } = req.body;
 
-      // Find the user by email
-      const user = await userCollection.findOne({ email });
+        // Find the user by email
+        const user = await userCollection.findOne({ email });
 
-      if (!user) {
-        console.log("hi")
-        return res.status(401).json({ message: 'Invalid email or password' });
-      }
-
-      // Compare the provided password with the hashed password in the database
-      const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
-
-      if (!isPasswordValid) {
-        console.log("hihi")
-        return res.status(401).json({ message: 'Invalid email or password' });
-      }
-      console.log("done")
-      return res.status(201).json({ message: 'ok'})
-    });
-
-    //Forgot Password
-    app.post("/forgotpass", async (req, res) => {
-      const { email } = req.body;
-
-      // Find the user by email
-      const user = await userCollection.findOne({ email });
-
-      if (!user) {
-        console.log("hi")
-        return res.status(401).json({ message: 'Invalid email or password' });
-      }
-      
-      // Sending Mail
-      const mailOptions = {
-        from: process.env.NodeMailer_USER,
-        to: email,
-        subject: 'Hello from Nodemailer',
-        text: `http://localhost:3000/resetpass/${user._id}`
-      };
-   
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log('Email sent: ' + info.response);
+        if (!user) {
+          console.log("hi")
+          return res.status(401).json({ message: 'Invalid email or password' });
         }
+
+        // Compare the provided password with the hashed password in the database
+        const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
+
+        if (!isPasswordValid) {
+          console.log("hihi")
+          return res.status(401).json({ message: 'Invalid email or password' });
+        }
+        console.log("done")
+        return res.status(201).json({ message: 'ok'})
       });
 
-      return res.status(201).json({ message: 'ok'})
-    });
+      //Forgot Password
+      app.post("/forgotpass", async (req, res) => {
+        const { email } = req.body;
 
-    //Reset Password
-    app.put("/resetpass/:id", async (req, res) => {
-      const userId = req.params.id;
-      const filter = { _id: new ObjectId(userId) };
+        // Find the user by email
+        const user = await userCollection.findOne({ email });
 
-      const { password } = req.body;
-      const newHashedPassword = await bcrypt.hash(password, 10);
-
-      const options = { upsert: true };
-      const updatedData = {
-        $set: {
-          hashedPassword: newHashedPassword
+        if (!user) {
+          console.log("hi")
+          return res.status(401).json({ message: 'Invalid email or password' });
         }
-      };
+      
+        // Sending Mail
+        const mailOptions = {
+          from: process.env.NodeMailer_USER,
+          to: email,
+          subject: 'Hello from Nodemailer',
+          text: `http://localhost:3000/resetpass/${user._id}`
+        };
+   
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
+        });
 
-      const result = await userCollection.updateOne(filter, updatedData, options);
-      res.send(result);
-    });
+        return res.status(201).json({ message: 'ok'})
+      });
 
-    //Add Bus
-    app.post("/addbus", async (req, res) => {
-      const bus= req.body;
-      const result = await busCollection.insertOne(bus);
-      res.send(result);
-    });
+      //Reset Password
+      app.put("/resetpass/:id", async (req, res) => {
+        const userId = req.params.id;
+        const filter = { _id: new ObjectId(userId) };
 
-    //Get all districts
-    app.get("/districts", async (req, res) => {
-      const districts = await districtCollection.find({}).sort({name : 1}).toArray();
-      res.send(districts);
-    });
+        const { password } = req.body;
+        const newHashedPassword = await bcrypt.hash(password, 10);
 
-    //Add Route
-    app.post("/addroute", async (req, res) => {
-      const route= req.body;
-      const result = await routeCollection.insertOne({route});
-      res.send(result);
-    });
+        const options = { upsert: true };
+        const updatedData = {
+          $set: {
+            hashedPassword: newHashedPassword
+          }
+        };
+
+        const result = await userCollection.updateOne(filter, updatedData, options);
+        res.send(result);
+      });
+
+      //Get all driver
+      app.get("/drivers", async (req, res) => {
+        const drivers = await userCollection.find({ role : "driver"}).toArray();
+        res.send(drivers);
+      });
+
+      //Add Bus
+      app.post("/addbus", async (req, res) => {
+        const bus= req.body;
+        const result = await busCollection.insertOne(bus);
+        res.send(result);
+      });
+
+      //Get all buses
+      app.get("/buses", async (req, res) => {
+        const buses = await busCollection.find({}).toArray();
+        res.send(buses);
+      });
+
+      //Get all districts
+      app.get("/districts", async (req, res) => {
+        const districts = await districtCollection.find({}).sort({name : 1}).toArray();
+        res.send(districts);
+      });
+
+      //Add Route
+      app.post("/addroute", async (req, res) => {
+        const route= req.body;
+        const result = await routeCollection.insertOne({route});
+        res.send(result);
+      });
+
+      //Get all routes
+      app.get("/routes", async (req, res) => {
+        const routes = await routeCollection.find({}).toArray();
+        res.send(routes);
+      });
+
+      //Add schedule
+      app.post("/addschedule", async (req, res) => {
+        const schedule = req.body;
+        const result = await scheduleCollection.insertOne(schedule);
+        res.send(result);
+      });
 
 
     } finally {
