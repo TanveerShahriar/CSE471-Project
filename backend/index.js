@@ -58,14 +58,6 @@ async function run() {
       const routeCollection = client.db("CSE471").collection("route");
       const scheduleCollection = client.db("CSE471").collection("schedule");
 
-      //Get user ID
-      app.get("/userId/:email", async (req, res) => {
-        const userEmail = req.params.email;
-        const query = { email : userEmail };
-        const user = await userCollection.findOne(query);
-        res.send(user._id);
-      });
-
       //Get if admin
       app.get("/admin/:userId", async (req, res) => {
         const userid = req.params.userId;
@@ -80,7 +72,7 @@ async function run() {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = { name, email, hashedPassword, role, verfiy : false };
+        const newUser = { name, email, hashedPassword, role, verify : false };
         const result = await userCollection.insertOne(newUser);
         
         // Sending Mail
@@ -114,7 +106,6 @@ async function run() {
         const user = await userCollection.findOne({ email });
 
         if (!user) {
-          console.log("hi")
           return res.status(401).json({ message: 'Invalid email or password' });
         }
 
@@ -122,11 +113,11 @@ async function run() {
         const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
 
         if (!isPasswordValid) {
-          console.log("hihi")
           return res.status(401).json({ message: 'Invalid email or password' });
         }
-        console.log("done")
-        return res.status(201).json({ message: 'ok'})
+        // console.log(user.verfiy);
+        // return res.status(201).json({ message: 'ok'})
+        res.status(201).send({ userId: user._id, verify: user.verify });
       });
 
       //Forgot Password

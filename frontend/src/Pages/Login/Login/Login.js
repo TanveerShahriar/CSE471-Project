@@ -14,10 +14,6 @@ const Login = () => {
 
         const user = { email, password };
 
-        fetch(`http://localhost:5000/userId/${email}`)
-            .then(res => res.json())
-            .then(data => Cookies.set('userId', data, { expires: 7 }));
-
         const url = "http://localhost:5000/login";
         const response = await fetch(url, {
             method: 'POST',
@@ -26,10 +22,15 @@ const Login = () => {
             },
             body: JSON.stringify(user)
         });
-        
-        if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+
+        if (data.verify === false){
+            navigate(`/verify/${data.userId}`)
+        }
+        else if (response.ok) {
+            Cookies.set('userId', data.userId, { expires: 7 })
             navigate('/');
-            console.log("done")
         } else {
             console.log("error")
           }
