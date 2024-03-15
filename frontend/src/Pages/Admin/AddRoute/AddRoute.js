@@ -47,6 +47,10 @@ const AddRoute = () => {
         <div className='w-2/4 bg-red-500 mx-auto my-10 py-5 rounded'>
             <h1 className='text-white text-center mt-2 text-4xl font-bold'>Add Route</h1>
 
+            {
+                addedDistricts.map(district => <div key={district}>{district}</div>)
+            }
+
             <div className="mb-4">
                 <select
                     className={"shadow appearance-none border rounded w-11/12 mx-4 my-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
