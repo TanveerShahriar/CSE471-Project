@@ -13,6 +13,7 @@ import RequireAdmin from './Pages/Login/RequireAdmin/RequireAdmin';
 import AddRoute from './Pages/Admin/AddRoute/AddRoute';
 import AddSchedule from './Pages/Admin/AddSchedule/AddSchedule';
 import Verify from './Pages/Login/Verify/Verify';
+import MailVerify from './Pages/Login/MailVerify/MailVerify';
 
 function App() {
   return (
@@ -82,6 +83,10 @@ function App() {
 
         <Route path='/verify/:userId' element={
           <Verify></Verify>
+        }></Route>
+
+        <Route path='/mailverify/:userId' element={
+          <MailVerify></MailVerify>
         }></Route>
         
       </Routes>

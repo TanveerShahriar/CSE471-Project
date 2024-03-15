@@ -98,6 +98,22 @@ async function run() {
         return res.status(201).json({ message: 'ok'})
       });
 
+      //Mail verify
+      app.put("/mailverify/:id", async (req, res) => {
+        const userId = req.params.id;
+        const filter = { _id: new ObjectId(userId) };
+
+        const options = { upsert: true };
+        const updatedData = {
+          $set: {
+            verify : true
+          }
+        };
+
+        const result = await userCollection.updateOne(filter, updatedData, options);
+        res.send(result);
+      });
+
       // Login user
       app.post('/login', async (req, res) => {
         const { email, password } = req.body;
