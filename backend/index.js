@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
+const cron = require('node-cron');
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -31,7 +32,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// send mail verification
+// send mails
 function mailSender(reciever, mailSubject, body){
   const mailOptions = {
     from: process.env.NodeMailer_USER,
@@ -49,6 +50,22 @@ function mailSender(reciever, mailSubject, body){
   });
 }
 
+// datetime converter
+function datetime(time){
+  const days = 5;
+
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+
+  const formattedDate = `${year}-${month}-${day}T${time}`;
+
+  return formattedDate;
+}
+
 async function run() {
     try {
       await client.connect();
@@ -57,6 +74,7 @@ async function run() {
       const districtCollection = client.db("CSE471").collection("district");
       const routeCollection = client.db("CSE471").collection("route");
       const scheduleCollection = client.db("CSE471").collection("schedule");
+      const dailyScheduleCollection = client.db("CSE471").collection("dailyschedule");
 
       //Get if admin
       app.get("/admin/:userId", async (req, res) => {
@@ -218,6 +236,25 @@ async function run() {
         const schedule = req.body;
         const result = await scheduleCollection.insertOne(schedule);
         res.send(result);
+      });
+
+      //Daily schedule
+      app.post("/dailyschedule", async (req, res) => {
+        const schedule = req.body;
+        const result = await dailyScheduleCollection.insertOne(schedule);
+        res.send(result);
+      });
+
+      //Automate Data Seeding for daily bus schedule
+      cron.schedule('59 23 * * *', async () => {
+        const schedules = await dailyScheduleCollection.find({}).toArray();
+
+        for (const schedule of schedules) {
+          delete schedule._id;
+          schedule.departureTime = datetime(schedule.departureTime);
+          schedule.arrivalTime = datetime(schedule.arrivalTime);
+          await scheduleCollection.insertOne(schedule);
+        }
       });
 
 

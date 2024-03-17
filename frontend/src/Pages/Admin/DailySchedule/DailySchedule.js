@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const AddSchedule = () => {
+const DailySchedule = () => {
     const [buses, setBuses] = useState([]);
     const [routes, setRoutes] = useState([]);
     const [drivers, setDrivers] = useState([]);
@@ -38,7 +38,7 @@ const AddSchedule = () => {
 
         const schedule = { departureTime, arrivalTime, busId, routeId, driverId };
 
-        const url = "http://localhost:5000/addschedule";
+        const url = "http://localhost:5000/dailyschedule";
         fetch(url, {
             method: 'POST',
             headers: {
@@ -49,18 +49,18 @@ const AddSchedule = () => {
             .then(res => res.json())
             .then(data => {
             });
-        
+
         event.target.reset()
     }
     return (
         <div className='w-2/4 bg-red-500 mx-auto my-10 py-5 rounded'>
-            <h1 className='text-white text-center mt-2 text-4xl font-bold'>Add Schedule</h1>
+            <h1 className='text-white text-center mt-2 text-4xl font-bold'>Daily Schedule</h1>
 
             <form onSubmit={handleScheduleAdd}>
                 <div className="mb-4">
                     <input
                         ref={depTimeRef}
-                        type="datetime-local"
+                        type="time"
                         id="departureTime"
                         className={"shadow appearance-none border rounded w-11/12 mx-4 my-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
                         required
@@ -68,7 +68,7 @@ const AddSchedule = () => {
 
                     <input
                         ref={arrTimeRef}
-                        type="datetime-local"
+                        type="time"
                         id="arrivalTime"
                         className={"shadow appearance-none border rounded w-11/12 mx-4 my-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
                         required
@@ -110,4 +110,4 @@ const AddSchedule = () => {
     );
 };
 
-export default AddSchedule;
+export default DailySchedule;

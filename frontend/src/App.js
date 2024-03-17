@@ -14,6 +14,7 @@ import AddRoute from './Pages/Admin/AddRoute/AddRoute';
 import AddSchedule from './Pages/Admin/AddSchedule/AddSchedule';
 import Verify from './Pages/Login/Verify/Verify';
 import MailVerify from './Pages/Login/MailVerify/MailVerify';
+import DailySchedule from './Pages/Admin/DailySchedule/DailySchedule';
 
 function App() {
   return (
@@ -61,6 +62,14 @@ function App() {
           <RequireAuth>
             <RequireAdmin>
               <AddSchedule></AddSchedule>
+            </RequireAdmin>
+          </RequireAuth>
+        }></Route>
+
+        <Route path='/dailyschedule' element={
+          <RequireAuth>
+            <RequireAdmin>
+              <DailySchedule></DailySchedule>
             </RequireAdmin>
           </RequireAuth>
         }></Route>
