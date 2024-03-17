@@ -10,7 +10,6 @@ const Home = () => {
         const password = passwordRef.current.value;
 
         const url = `http://localhost:5000/resetpass/${userId}`;
-        console.log(url)
         const response = await fetch(url, {
             method: 'PUT',
             headers: {

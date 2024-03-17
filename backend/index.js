@@ -101,12 +101,32 @@ async function run() {
         res.send(result);
       });
 
+      //Save admin info
+      app.put("/admininfo/:id", async (req, res) => {
+        const userId = req.params.id;
+        const { name, password, mobile } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const filter = { _id: new ObjectId(userId) };
+
+        const options = { upsert: true };
+        const updatedData = {
+          $set: {
+            name : name,
+            password : hashedPassword,
+            mobile : mobile,
+            otp : false
+          }
+        };
+
+        const result = await userCollection.updateOne(filter, updatedData, options);
+        res.send(result);
+      });
+
       //Save driver info
       app.put("/driverinfo/:id", async (req, res) => {
         const userId = req.params.id;
         const { name, password, mobile, licenseNo, expiryDate } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
-        // console.log( name, password, mobile, licenseNo, expiryDate );
         const filter = { _id: new ObjectId(userId) };
 
         const options = { upsert: true };
@@ -201,7 +221,6 @@ async function run() {
         const user = await userCollection.findOne({ email });
 
         if (!user) {
-          console.log("hi")
           return res.status(401).json({ message: 'Invalid email or password' });
         }
 

@@ -5,7 +5,6 @@ const MailVerify = () => {
     const { userId } = useParams();
     useEffect( () =>{
         const url = `http://localhost:5000/mailverify/${userId}`;
-        // console.log(url)
         const response = fetch(url, {
             method: 'PUT',
             headers: {

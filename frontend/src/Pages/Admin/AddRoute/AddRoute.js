@@ -15,8 +15,6 @@ const AddRoute = () => {
         getDistrict();
     }, []);
 
-    console.log(districts);
-
     const handlePlus = async event => {
         const districtVal = districtRef.current.value;
 
