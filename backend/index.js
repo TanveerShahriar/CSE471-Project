@@ -84,13 +84,30 @@ async function run() {
         res.send({role : user.role});
       });
 
+      //Register driver and admin
+      app.post("/createaccount", async (req, res) => {
+        const { email, role } = req.body;
+        const ID = new ObjectId();
+        const password = ID.toString().slice(0, 8);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user = {_id : ID, email, password : hashedPassword, role, verify : true, otp : true}
+        const result = await userCollection.insertOne(user);
+        
+        // Sending Mail
+        const mailSubject = 'Account Details';
+        const body = `email : ${email} \npassword : ${password}`;
+        mailSender(email, mailSubject, body);
+
+        res.send(result);
+      });
+
       //Register user
       app.post("/register", async (req, res) => {
         const { name, email, password, role } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = { name, email, hashedPassword, role, verify : false };
+        const newUser = { name, email, password : hashedPassword, role, verify : false };
         const result = await userCollection.insertOne(newUser);
         
         // Sending Mail
@@ -144,13 +161,11 @@ async function run() {
         }
 
         // Compare the provided password with the hashed password in the database
-        const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
+        const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
           return res.status(401).json({ message: 'Invalid email or password' });
         }
-        // console.log(user.verfiy);
-        // return res.status(201).json({ message: 'ok'})
         res.status(201).send({ userId: user._id, verify: user.verify });
       });
 
@@ -185,7 +200,7 @@ async function run() {
         const options = { upsert: true };
         const updatedData = {
           $set: {
-            hashedPassword: newHashedPassword
+            password: newHashedPassword
           }
         };
 

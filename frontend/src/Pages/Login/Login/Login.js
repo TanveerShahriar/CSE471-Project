@@ -23,7 +23,6 @@ const Login = () => {
             body: JSON.stringify(user)
         });
         const data = await response.json();
-        console.log(data);
 
         if (data.verify === false){
             navigate(`/verify/${data.userId}`)
