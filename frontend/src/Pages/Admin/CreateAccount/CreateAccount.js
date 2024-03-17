@@ -9,7 +9,6 @@ const CreateAccount = () => {
         const email = emailRef.current.value;
         const role = roleRef.current.value.toLowerCase();
 
-        console.log(email, role);
         const user = { email, role};
 
         const url = "http://localhost:5000/createaccount";

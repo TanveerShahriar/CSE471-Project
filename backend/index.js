@@ -101,13 +101,37 @@ async function run() {
         res.send(result);
       });
 
+      //Save driver info
+      app.put("/driverinfo/:id", async (req, res) => {
+        const userId = req.params.id;
+        const { name, password, mobile, licenseNo, expiryDate } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // console.log( name, password, mobile, licenseNo, expiryDate );
+        const filter = { _id: new ObjectId(userId) };
+
+        const options = { upsert: true };
+        const updatedData = {
+          $set: {
+            name : name,
+            password : hashedPassword,
+            mobile : mobile,
+            licenseNo : licenseNo,
+            expiryDate : expiryDate,
+            otp : false
+          }
+        };
+
+        const result = await userCollection.updateOne(filter, updatedData, options);
+        res.send(result);
+      });
+
       //Register user
       app.post("/register", async (req, res) => {
         const { name, email, password, role } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = { name, email, password : hashedPassword, role, verify : false };
+        const newUser = { name, email, password : hashedPassword, role, verify : false, otp : false };
         const result = await userCollection.insertOne(newUser);
         
         // Sending Mail
@@ -166,7 +190,7 @@ async function run() {
         if (!isPasswordValid) {
           return res.status(401).json({ message: 'Invalid email or password' });
         }
-        res.status(201).send({ userId: user._id, verify: user.verify });
+        res.status(201).send({ userId : user._id, verify : user.verify, otp : user.otp, role : user.role});
       });
 
       //Forgot Password

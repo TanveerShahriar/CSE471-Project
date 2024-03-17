@@ -16,6 +16,8 @@ import Verify from './Pages/Login/Verify/Verify';
 import MailVerify from './Pages/Login/MailVerify/MailVerify';
 import DailySchedule from './Pages/Admin/DailySchedule/DailySchedule';
 import CreateAccount from './Pages/Admin/CreateAccount/CreateAccount';
+import AdminInfo from './Pages/Login/AdminInfo/AdminInfo';
+import DriverInfo from './Pages/Login/DriverInfo/DriverInfo';
 
 function App() {
   return (
@@ -85,6 +87,14 @@ function App() {
 
         <Route path='/login' element={
           <Login></Login>
+        }></Route>
+
+        <Route path='/admininfo/:userId' element={
+          <AdminInfo></AdminInfo>
+        }></Route>
+
+        <Route path='/driverinfo/:userId' element={
+          <DriverInfo></DriverInfo>
         }></Route>
 
         <Route path='/register' element={

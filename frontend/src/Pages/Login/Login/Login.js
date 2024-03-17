@@ -27,6 +27,14 @@ const Login = () => {
         if (data.verify === false){
             navigate(`/verify/${data.userId}`)
         }
+        else if (data.otp === true) {
+            if (data.role === 'admin') {
+                navigate(`/admininfo/${data.userId}`)
+            }
+            else {
+                navigate(`/driverinfo/${data.userId}`)
+            }
+        }
         else if (response.ok) {
             Cookies.set('userId', data.userId, { expires: 7 })
             navigate('/');
