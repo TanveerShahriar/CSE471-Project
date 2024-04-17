@@ -303,6 +303,45 @@ async function run() {
         res.send(result);
       });
 
+      //Bus search
+      app.post("/search", async (req, res) => {
+        const {from, to, departure, type} = req.body;
+
+        const filter = { route: { $all: [from, to] }};
+
+        const routes = await routeCollection.find(filter).toArray();
+
+        routes.forEach((routeObj, index) => {
+          let fromIndex = routeObj.route.indexOf(from);
+          let toIndex = routeObj.route.indexOf(to);
+        
+          if (fromIndex !== -1 && toIndex !== -1 && fromIndex > toIndex) {
+            routes.splice(index, 1)
+          }
+        });
+
+        let schedules = []
+
+        for(let i = 0; i < routes.length; i++){
+          const query = {
+            $and: [
+              { departureTime: { $regex: "^" + departure } },
+              { routeId: routes[i]._id.toString() }
+            ]
+          }
+          const schedule = await scheduleCollection.find(query).toArray();
+          schedules = schedules.concat(schedule);
+        }
+
+        for(let i = 0; i < schedules.length; i++){
+          const bus = await busCollection.findOne({ _id: new ObjectId(schedules[i].busId) });
+          if (bus.type !== type){
+            schedules.splice(i, 1);
+          }
+        }
+        res.send(schedules);
+      });
+
       //Automate Data Seeding for daily bus schedule
       cron.schedule('59 23 * * *', async () => {
         const schedules = await dailyScheduleCollection.find({}).toArray();
