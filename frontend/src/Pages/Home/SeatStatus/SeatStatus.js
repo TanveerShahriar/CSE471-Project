@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from "@stripe/stripe-js";
+import CheckoutForm from "./CheckoutForm";
+
+const stripePromise = loadStripe('pk_test_51P7M9DLFvLm4gyXrsce78jLXrQWp2etGOsgsKnvNBPpWYWt8v2PZVgNsWXvNbRYclErxTR4lsoVVqxho75nvLos200oWv01t2A');
 
 const SeatStatus = () => {
     const [schedule, setSchedule] = useState([]);
@@ -67,6 +72,9 @@ const SeatStatus = () => {
                             <p>Price Per Seat : {schedule.price}</p>
                             <p>Total Seats : {yellowSeats.length}</p>
                             <p>Total Price : {schedule.price * yellowSeats.length}</p>
+                            <Elements stripe={stripePromise}>
+                                <CheckoutForm price = {schedule.price * yellowSeats.length}></CheckoutForm>
+                            </Elements>
                         </div>
                     </div>
                 </div>

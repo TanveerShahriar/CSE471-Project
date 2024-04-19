@@ -1,10 +1,12 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY)
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-require("dotenv").config();
 const port = process.env.PORT || 5000;
 
 const app = express();
@@ -92,6 +94,18 @@ async function run() {
       const routeCollection = client.db("CSE471").collection("route");
       const scheduleCollection = client.db("CSE471").collection("schedule");
       const dailyScheduleCollection = client.db("CSE471").collection("dailyschedule");
+
+      // For payment
+      app.post('/create-payment-intent', async (req, res) => {
+        const { price } = req.body;
+        const amount = price * 100;
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount,
+            currency: 'bdt',
+            payment_method_types: ['card']
+        });
+        res.send({ clientSecret: paymentIntent.client_secret })
+    });
 
       //Get if admin
       app.get("/admin/:userId", async (req, res) => {
