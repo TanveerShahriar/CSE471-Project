@@ -9,6 +9,7 @@ const DailySchedule = () => {
     const busRef = useRef('');
     const routeRef = useRef('');
     const driverRef = useRef('');
+    const priceRef = useRef('');
 
     useEffect( () =>{
         fetch("http://localhost:5000/buses")
@@ -35,8 +36,9 @@ const DailySchedule = () => {
         const busId = buses.filter(bus => bus.name === busRef.current.value)[0]._id;
         const routeId = routes.filter(route => route.route.join(" -> ") === routeRef.current.value)[0]._id;
         const driverId = drivers.filter(driver => driver.name === driverRef.current.value)[0]._id;
+        const price = parseInt(priceRef.current.value);
 
-        const schedule = { departureTime, arrivalTime, busId, routeId, driverId };
+        const schedule = { departureTime, arrivalTime, busId, routeId, driverId, price };
 
         const url = "http://localhost:5000/dailyschedule";
         fetch(url, {
@@ -100,6 +102,15 @@ const DailySchedule = () => {
                         drivers.map(driver => <option key={driver._id}>{driver.name}</option>)
                         }
                     </select>
+
+                    <input
+                        ref={priceRef}
+                        type="number"
+                        id="price"
+                        placeholder="Enter Ticket Price"
+                        className={"shadow appearance-none border rounded w-11/12 mx-4 my-2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
+                        required
+                    />
                 </div> 
 
                 <button className="bg-red-400 hover:bg-red-700 text-xl text-white font-bold py-2 px-4 rounded">

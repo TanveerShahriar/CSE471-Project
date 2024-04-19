@@ -66,6 +66,23 @@ function datetime(time){
   return formattedDate;
 }
 
+//Seat status for schedule
+function generateSeatStatus(numSeats) {
+  const seatStatus = {};
+  const rows = Math.ceil(numSeats / 4); // Calculate the number of rows needed
+  
+  for (let row = 1; row <= rows; row++) {
+    for (let seat = 1; seat <= 4; seat++) {
+      if ((row - 1) * 4 + seat <= numSeats) {
+        const seatName = String.fromCharCode(65 + seat - 1) + row; // A1, A2, ..., B1, B2, ...
+        seatStatus[seatName] = false; // Set status to false
+      }
+    }
+  }
+
+  return seatStatus;
+}
+
 async function run() {
     try {
       await client.connect();
@@ -292,6 +309,9 @@ async function run() {
       //Add schedule
       app.post("/addschedule", async (req, res) => {
         const schedule = req.body;
+        const seat = await busCollection.findOne({ _id: new ObjectId(schedule.busId) });
+        const numSeat = seat.seat;
+        schedule.seats = generateSeatStatus(numSeat);
         const result = await scheduleCollection.insertOne(schedule);
         res.send(result);
       });
@@ -350,6 +370,9 @@ async function run() {
           delete schedule._id;
           schedule.departureTime = datetime(schedule.departureTime);
           schedule.arrivalTime = datetime(schedule.arrivalTime);
+          const seat = await busCollection.findOne({ _id: new ObjectId(schedule.busId) });
+          const numSeat = seat.seat;
+          schedule.seats = generateSeatStatus(numSeat);
           await scheduleCollection.insertOne(schedule);
         }
       });
