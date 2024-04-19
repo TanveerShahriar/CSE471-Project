@@ -18,6 +18,7 @@ import DailySchedule from './Pages/Admin/DailySchedule/DailySchedule';
 import CreateAccount from './Pages/Admin/CreateAccount/CreateAccount';
 import AdminInfo from './Pages/Login/AdminInfo/AdminInfo';
 import DriverInfo from './Pages/Login/DriverInfo/DriverInfo';
+import SeatStatus from './Pages/Home/SeatStatus/SeatStatus';
 
 function App() {
   return (
@@ -82,6 +83,12 @@ function App() {
             <RequireAdmin>
               <CreateAccount></CreateAccount>
             </RequireAdmin>
+          </RequireAuth>
+        }></Route>
+
+        <Route path='/seatstatus/:scheduleId' element={
+          <RequireAuth>
+            <SeatStatus></SeatStatus>
           </RequireAuth>
         }></Route>
 

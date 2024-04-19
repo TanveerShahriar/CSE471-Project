@@ -107,7 +107,7 @@ const Home = () => {
                             <p>Departure Time : {schedule.departureTime.split("T")[1]}</p>
                             <p>Arrival Time : {schedule.arrivalTime.split("T")[1]}</p>
                         </div>
-                        <Link to='/test' className="bg-red-400 hover:bg-red-700 text-xl text-white font-bold py-2 px-4 rounded">
+                        <Link to={"/seatstatus/"+schedule._id} className="bg-red-400 hover:bg-red-700 text-xl text-white font-bold py-2 px-4 rounded">
                             BOOK TICKET
                         </Link>
                     </div>

@@ -68,14 +68,14 @@ function datetime(time){
 
 //Seat status for schedule
 function generateSeatStatus(numSeats) {
-  const seatStatus = {};
+  const seatStatus = [];
   const rows = Math.ceil(numSeats / 4); // Calculate the number of rows needed
   
   for (let row = 1; row <= rows; row++) {
     for (let seat = 1; seat <= 4; seat++) {
       if ((row - 1) * 4 + seat <= numSeats) {
         const seatName = String.fromCharCode(65 + seat - 1) + row; // A1, A2, ..., B1, B2, ...
-        seatStatus[seatName] = false; // Set status to false
+        seatStatus.push({ [seatName] : false})
       }
     }
   }
@@ -314,6 +314,13 @@ async function run() {
         schedule.seats = generateSeatStatus(numSeat);
         const result = await scheduleCollection.insertOne(schedule);
         res.send(result);
+      });
+
+      //Get schedule by ID
+      app.get("/schedule/:id", async (req, res) => {
+        const { id } = req.params;
+        const schedule = await scheduleCollection.findOne({ _id: new ObjectId(id) });
+        res.send(schedule);
       });
 
       //Daily schedule
