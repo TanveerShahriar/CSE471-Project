@@ -45,7 +45,7 @@ const SeatStatus = () => {
                         <div className="grid grid-cols-4">
                             {
                                 schedule.seats.map((seat, index) => 
-                                    <div className="border-solid border-2" key={index}>
+                                    <div className="border-solid border-2 m-2" key={index}>
                                         {
                                             seat[Object.keys(seat)[0]] ?
                                             <div className="bg-red-700">{Object.keys(seat)[0]}</div>

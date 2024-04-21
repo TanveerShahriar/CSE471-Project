@@ -1,6 +1,8 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
+import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFViewer } from '@react-pdf/renderer';
 
 const CheckoutForm = ( { price, scheduleId, seats } ) => {
     const stripe = useStripe();
@@ -40,28 +42,28 @@ const CheckoutForm = ( { price, scheduleId, seats } ) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        
         if (!stripe || !elements) {
             // Stripe.js has not loaded yet. Make sure to disable
             // form submission until Stripe.js has loaded.
             return;
-          }
-
+        }
+        
         const card = elements.getElement(CardElement);
-
+        
         if (card == null) {
             return;
         }
-
+        
         const {error, paymentMethod} = await stripe.createPaymentMethod({
             type: 'card',
             card,
         });
-
+        
         setCardError(error?.message || '')
         setSuccess('');
         setProcessing(true);
-
+        
         // confirm card payment
         const { paymentIntent, error: intentError } = await stripe.confirmCardPayment(
             clientSecret,
@@ -75,7 +77,7 @@ const CheckoutForm = ( { price, scheduleId, seats } ) => {
                 },
             },
         );
-
+        
         if (intentError) {
             setCardError(intentError?.message);
             setProcessing(false);
@@ -84,7 +86,7 @@ const CheckoutForm = ( { price, scheduleId, seats } ) => {
             setCardError('');
             setTransactionId(paymentIntent.id);
             setSuccess('Congrats! Your payment is completed.');
-
+            
             fetch("http://localhost:5000/bookticket", {
                 method: 'POST',
                 headers: {
@@ -92,10 +94,51 @@ const CheckoutForm = ( { price, scheduleId, seats } ) => {
                 },
                 body: JSON.stringify({ user : user.name, email : user.email, price, scheduleId, transactionId : paymentIntent.id, seats })
             })
-                .then(res => res.json())
-                .then(data => {});
+            .then(res => res.json())
+            .then(data => {});
         }
     }
+
+    const handleDownload = async (event) => {
+        // Get the width and height of the window
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        // Create a new PDF document
+        const pdfDoc = await PDFDocument.create();
+        
+        // Add a new page to the document
+        const page = pdfDoc.addPage([screenWidth, screenHeight]);
+        
+        // Draw text on the page
+        const text = `Seats: ${seats.join(" ")} \nYour transcion ID : ${transactionId} \nPrice : ${price}`;
+        page.drawText( text , {
+            x: 50,
+            y: screenHeight - 50,
+            size: 15,
+            color: rgb(0, 0, 0),
+        });
+        
+        // Serialize the PDF document to bytes
+        const pdfBytes = await pdfDoc.save();
+        
+        // Convert bytes to blob
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        
+        // Create URL from blob
+        const pdfUrl = URL.createObjectURL(blob);
+
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = 'ticket.pdf'; // Set the file name and download attribute
+        document.body.appendChild(link); // Append the link to the body
+        link.click(); // Simulate a click on the link
+        
+        // Open the PDF in a new window for printing
+        window.open(pdfUrl);
+    }
+
     return (
         <div>
             <form onSubmit={handleSubmit} className="my-4">
@@ -128,7 +171,9 @@ const CheckoutForm = ( { price, scheduleId, seats } ) => {
                 {
                     success && <div className='text-white'>
                         <p>{success}  </p>
-                        <p>Your transaction Id: <span className="text-white font-bold">{transactionId}</span> </p>
+                        <button onClick={handleDownload} className="my-2 bg-red-400 hover:bg-red-700 text-xl text-white font-bold py-2 px-4 rounded">
+                            Download Ticket
+                        </button>
                     </div>
                 }
             </div>
