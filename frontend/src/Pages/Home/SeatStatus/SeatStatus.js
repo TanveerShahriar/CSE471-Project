@@ -73,7 +73,11 @@ const SeatStatus = () => {
                             <p>Total Seats : {yellowSeats.length}</p>
                             <p>Total Price : {schedule.price * yellowSeats.length}</p>
                             <Elements stripe={stripePromise}>
-                                <CheckoutForm price = {schedule.price * yellowSeats.length}></CheckoutForm>
+                                <CheckoutForm 
+                                    price = {schedule.price * yellowSeats.length}
+                                    scheduleId = {schedule._id}
+                                    seats = {yellowSeats}
+                                ></CheckoutForm>
                             </Elements>
                         </div>
                     </div>

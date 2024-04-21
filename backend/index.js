@@ -94,6 +94,7 @@ async function run() {
       const routeCollection = client.db("CSE471").collection("route");
       const scheduleCollection = client.db("CSE471").collection("schedule");
       const dailyScheduleCollection = client.db("CSE471").collection("dailyschedule");
+      const ticketCollection = client.db("CSE471").collection("ticket");
 
       // For payment
       app.post('/create-payment-intent', async (req, res) => {
@@ -105,7 +106,34 @@ async function run() {
             payment_method_types: ['card']
         });
         res.send({ clientSecret: paymentIntent.client_secret })
-    });
+      });
+
+      //Book ticket
+      app.post("/bookticket", async (req, res) => {
+        const ticket = req.body;
+        const result = await ticketCollection.insertOne(ticket);
+
+        const id = ticket.scheduleId;
+        const schedule = await scheduleCollection.findOne({ _id: new ObjectId(id) });
+
+        ticket.seats.forEach(seat => {
+          const index = (parseInt(seat[1]) - 1) * 4 + seat[0].charCodeAt(0) - 'A'.charCodeAt(0);
+          const key = Object.keys(schedule.seats[index])[0];
+          schedule.seats[index][key] = true;
+        });
+
+        const filter = { _id: new ObjectId(id) };
+        const options = { upsert: true };
+        const updatedData = {
+          $set: {
+            seats : schedule.seats
+          }
+        };
+
+        const update = await scheduleCollection.updateOne(filter, updatedData, options);
+
+        res.send(result);
+      });
 
       //Get if admin
       app.get("/admin/:userId", async (req, res) => {
@@ -280,6 +308,13 @@ async function run() {
 
         const result = await userCollection.updateOne(filter, updatedData, options);
         res.send(result);
+      });
+
+      //Get user details by ID
+      app.get("/userdetails/:id", async (req, res) => {
+        const userId = req.params.id;
+        const user = await userCollection.find({ _id: new ObjectId(userId) }).toArray();
+        res.send({name : user[0].name, email : user[0].email});
       });
 
       //Get all driver

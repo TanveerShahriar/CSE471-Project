@@ -1,7 +1,8 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { useEffect, useState } from "react";
+import Cookies from 'js-cookie';
 
-const CheckoutForm = ( {price} ) => {
+const CheckoutForm = ( { price, scheduleId, seats } ) => {
     const stripe = useStripe();
     const elements = useElements();
     const [cardError, setCardError] = useState('');
@@ -9,6 +10,15 @@ const CheckoutForm = ( {price} ) => {
     const [processing, setProcessing] = useState(false);
     const [transactionId, setTransactionId] = useState('');
     const [clientSecret, setClientSecret] = useState('');
+    const [user, setUser] = useState({});
+
+    const userId = Cookies.get('userId');
+
+    useEffect( () => {
+        fetch(`http://localhost:5000/userdetails/${userId}`)
+        .then(res => res.json())
+        .then(data => setUser(data));
+    }, [])
 
     useEffect( () => {
         if (price > 0) {
@@ -27,10 +37,6 @@ const CheckoutForm = ( {price} ) => {
                 });
         }
     }, [price])
-
-    useEffect(() => {
-        console.log(clientSecret);
-    }, [clientSecret]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -55,6 +61,7 @@ const CheckoutForm = ( {price} ) => {
         setCardError(error?.message || '')
         setSuccess('');
         setProcessing(true);
+
         // confirm card payment
         const { paymentIntent, error: intentError } = await stripe.confirmCardPayment(
             clientSecret,
@@ -62,8 +69,8 @@ const CheckoutForm = ( {price} ) => {
                 payment_method: {
                     card: card,
                     billing_details: {
-                        name: 'dhur',
-                        email: 'email@gmail.com'
+                        name: user.name,
+                        email: user.email
                     },
                 },
             },
@@ -76,8 +83,17 @@ const CheckoutForm = ( {price} ) => {
         else {
             setCardError('');
             setTransactionId(paymentIntent.id);
-            console.log(paymentIntent);
-            setSuccess('Congrats! Your payment is completed.')
+            setSuccess('Congrats! Your payment is completed.');
+
+            fetch("http://localhost:5000/bookticket", {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({ user : user.name, email : user.email, price, scheduleId, transactionId : paymentIntent.id, seats })
+            })
+                .then(res => res.json())
+                .then(data => {});
         }
     }
     return (
