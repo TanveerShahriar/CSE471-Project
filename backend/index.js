@@ -132,6 +132,11 @@ async function run() {
 
         const update = await scheduleCollection.updateOne(filter, updatedData, options);
 
+        // Sending Mail
+        const mailSubject = 'Ticket';
+        const body = `Seats: ${ticket.seats.join(" ")} \nYour transcion ID : ${ticket.transactionId} \nPrice : ${ticket.price}`;
+        mailSender(ticket.email, mailSubject, body);
+
         res.send(result);
       });
 
